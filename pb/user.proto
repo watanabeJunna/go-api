@@ -5,14 +5,14 @@ import "google/api/annotations.proto";
 package gateway;
 
 message Message {
-  string name = 1;
+    string name = 1;
 }
 
 service UserService {
-  rpc Get (Message) returns (Message) {
+    rpc Post (Message) returns (Message) {
         option (google.api.http) = {
-        post: "/v1/example/echo"
-        body: "*"
-    };
-  }
+            post: "/v1/example/echo"
+            body: "*"
+        };
+    }
 }
