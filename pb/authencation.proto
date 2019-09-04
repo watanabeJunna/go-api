@@ -8,8 +8,8 @@ message Message {
   string name = 1;
 }
 
-service AuthenticationService {
-  rpc SayHello (Message) returns (Message) {
+service UserService {
+  rpc Get (Message) returns (Message) {
         option (google.api.http) = {
         post: "/v1/example/echo"
         body: "*"
