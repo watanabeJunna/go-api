@@ -40,3 +40,5 @@ protoc -I/usr/local/include -I. \
   -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
   --grpc-gateway_out=logtostderr=true:. \
   authentication.proto
+
+docker run --rm -it -v /`pwd`://go/src/user/ buildpb
