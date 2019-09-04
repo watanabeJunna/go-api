@@ -4,15 +4,16 @@ import "google/api/annotations.proto";
 
 package gateway;
 
-message Message {
+message User {
     string name = 1;
 }
 
+message GetUserRequest {}
+
 service UserService {
-    rpc Post (Message) returns (Message) {
+    rpc GetUser (GetUserRequest) returns (User) {
         option (google.api.http) = {
-            post: "/v1/example/echo"
-            body: "*"
+            get: "/api/v1/user/auth"
         };
     }
 }
