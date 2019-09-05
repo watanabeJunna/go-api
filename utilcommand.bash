@@ -1,14 +1,14 @@
 ## $ . utilcommand.sh
 
 up() {
-    for c in "go run $(find -name server)/main.go" "go run $(find -name api)/main.go"; do 
+    for c in "go run $(find -name server)/main.go" "go run $(find -name gateway)/main.go"; do 
         ${c} &
     done
 }
 
 down() {
     ps -ef | grep server/main.go | grep -v grep | awk '{print $1}' | xargs -I{} kill -9 {}
-    ps -ef | grep server/api.go  | grep -v grep | awk '{print $1}' | xargs -I{} kill -9 {}
+    ps -ef | grep server/gateway.go | grep -v grep | awk '{print $1}' | xargs -I{} kill -9 {}
     ps -ef | grep go-build | grep -v grep | awk '{print $1}' | xargs -I{} kill -9 {}
 }
 
