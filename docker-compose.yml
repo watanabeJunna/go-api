@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ".:/go/src/user"
+  db:
+    image: "mongo:3.4.22-xenial"
+    volumes:
+      - "db:/data/db"
+      - "configdb:/data/configdb"
+    ports:
+      - "27017:27017"
+volumes:
+  db:
+  configdb:
