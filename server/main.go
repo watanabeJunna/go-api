@@ -15,7 +15,7 @@ import (
 type userService struct{}
 
 const (
-    dbUrl = "mongodb://172.17.0.3:27017"
+    dbUrl = "mongodb://db:27017"
     dbName = "test"
     collectionName = "user"
 )
