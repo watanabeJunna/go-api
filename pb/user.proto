@@ -14,7 +14,7 @@ message AuthRequest {
 }
 
 service UserService {
-    rpc Auth (AuthRequest) returns (AuthResponse) {
+    rpc Auth(AuthRequest) returns (AuthResponse) {
         option (google.api.http) = {
             post: "/api/v1/user/auth"
             body: "*"
