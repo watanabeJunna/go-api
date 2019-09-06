@@ -7,6 +7,8 @@ services:
       dockerfile: dev.Dockerfile
     volumes:
       - ".:/go/src/user"
+    environment:
+      - AES_KEY=${AES_KEY}
   db:
     image: "mongo:3.4.22-xenial"
     volumes:
