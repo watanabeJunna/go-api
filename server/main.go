@@ -5,14 +5,43 @@ import (
     "google.golang.org/grpc"
     "google.golang.org/grpc/reflection"
     "log"
+    "fmt"
     "net"
+    "os"
     pb "user/pb"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
+    "../lib/cipher"
 )
 
 type userService struct{}
+
+var key = os.Getenv("AES_KEY")
+
+func (e *userService) Auth(ctx context.Context, req *pb.AuthRequest) (*pb.AuthResponse, error) {
+    username := req.Username
+    password, err := cipher.Encrypt([]byte(key), []byte(req.Password))
+
+    if err != nil {
+        return nil, err
+    }
+
+    query := bson.M{ "username": username, "password": password }
+
+    user := &bson.D{}
+
+    err := collection.FindOne(context.Background(), query).Decode(user)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+
+    isok := len(user) != 0
+
+    // why is replication invisible for bool values?
+    return &pb.AuthResponse{ Ok: isok }, nil
+}
 
 const (
     dbUrl = "mongodb://db:27017"
@@ -37,36 +66,6 @@ func init() {
     }
     
     collection = client.Database(dbName).Collection(collectionName)
-}
-
-func (e *userService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User, error) {
-    user := &pb.User { Name: "WatanabeJunna" }
-
-    _, err := collection.InsertOne(context.Background(), user)
-
-    if err != nil {
-        return nil, err
-    }
-
-    document, err := getUser()
-
-    if err != nil {
-        return nil, err
-    }
-
-    return &pb.User{ Name: (*document)["name"].(string) }, nil
-}
-
-func getUser() (*bson.M, error) {
-    var document bson.M
-
-    err := collection.FindOne(context.Background(), bson.D{}).Decode(&document)
-
-    if err != nil {
-        return nil, err
-    }
-
-    return &document, nil
 }
 
 func main() {
