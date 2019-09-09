@@ -27,7 +27,7 @@ func (e *userService) Auth(ctx context.Context, req *pb.AuthRequest) (*pb.AuthRe
         return nil, err
     }
 
-    query := bson.M{ "username": username, "password": password }
+    query := bson.M{ "username": username }
 
     user := &bson.D{}
 
@@ -37,7 +37,11 @@ func (e *userService) Auth(ctx context.Context, req *pb.AuthRequest) (*pb.AuthRe
         fmt.Println(err)
     }
 
-    isok := len(user) != 0
+    if len(user) == 0 {
+        return &pb.AuthResponse{ Ok: isok }, nil
+    }
+
+    isok := cipher.Decrypt([]byte(key), user.password)
 
     // why is replication invisible for bool values?
     return &pb.AuthResponse{ Ok: isok }, nil

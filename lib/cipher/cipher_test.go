@@ -6,19 +6,19 @@ func TestCipher(t *testing.T) {
 	src := "WatanabeJunna"
 	key := "8Fmj4kb4oWpw9g=="
 
-	enc, err := Encrypt([]byte(key), []byte(src))
+	enc, err := Encrypt(key, src)
 	
     if err != nil {
         panic(err)
 	}
 
-	dec, err := Decrypt([]byte(key), enc)
+	dec, err := Decrypt(key, enc)
 	
     if err != nil {
         panic(err)
 	}
 	
-	if string(dec) != src {
+	if dec != src {
 		t.Errorf("src = %q, dec %q", src, dec)
 	}
 }
