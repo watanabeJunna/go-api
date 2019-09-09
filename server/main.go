@@ -1,13 +1,13 @@
 package main
 
 import (
-    "golang.org/x/net/context"
-    "google.golang.org/grpc"
-    "google.golang.org/grpc/reflection"
     "log"
     "fmt"
     "net"
     "os"
+    "golang.org/x/net/context"
+    "google.golang.org/grpc"
+    "google.golang.org/grpc/reflection"
     pb "user/pb"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
@@ -21,7 +21,7 @@ var key = os.Getenv("AES_KEY")
 
 func (e *userService) Auth(ctx context.Context, req *pb.AuthRequest) (*pb.AuthResponse, error) {
     username := req.Username
-    password, err := cipher.Encrypt([]byte(key), []byte(req.Password))
+    password, err := cipher.Encrypt(key, req.Password)
 
     if err != nil {
         return nil, err
@@ -29,22 +29,27 @@ func (e *userService) Auth(ctx context.Context, req *pb.AuthRequest) (*pb.AuthRe
 
     query := bson.M{ "username": username }
 
-    user := &bson.D{}
+    user := &bson.M{}
 
-    err := collection.FindOne(context.Background(), query).Decode(user)
+    err = collection.FindOne(context.Background(), query).Decode(user)
 
     if err != nil {
         fmt.Println(err)
     }
 
-    if len(user) == 0 {
-        return &pb.AuthResponse{ Ok: isok }, nil
+    if len((*user)) == 0 {
+        return &pb.AuthResponse{ Ok: false }, nil
     }
 
-    isok := cipher.Decrypt([]byte(key), user.password)
+    dec, err := cipher.Decrypt(key, (*user)["password"].(string))
 
-    // why is replication invisible for bool values?
-    return &pb.AuthResponse{ Ok: isok }, nil
+    if err != nil {
+        return nil, err
+    }
+
+    ok := dec == password
+
+    return &pb.AuthResponse{ Ok: ok }, nil
 }
 
 const (
